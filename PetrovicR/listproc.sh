@@ -1,13 +1,23 @@
 #!/bin/bash
-function main()
-{
-}	
+ function main()
+	{ 
+		affiche	
+	}	
 function affiche()
 {
-	lstpid=` ls /proc |grep -E ^[0-9]`
+	lstpid=`ls /proc |grep -E ^[0-9]`
 		for repetition in $lstpid
 		do
-			`egrep "Name|State|^[Pid]" /proc/$repetition/status`>>fic
-			`awk -f " " fic`
+			anwser=`awk '/^Name/ {printf "%s",$2} /^State/ {gsub("\(|\)"," ",$3); printf "%s",$3} /^Pid/{printf "%s\n",$2} ' /proc/$repetition/status`
+	
+			if $anwser == `awk'/^awk' $anwser`
+			then
+				$anwser>>/bin/nul			
+			
+			else
+			
+				echo "$anwser"
+			fi
 		done
 }
+main $@

@@ -10,11 +10,9 @@ function getprocess()
 {
 for proc in $listProc
 do
-	printf "%s `grep "Name" /proc/$proc/status`\n"
-	printf "%s `grep "^Pid" /proc/$proc/status`\n"
-	printf "%s `grep "State" /proc/$proc/status`\n"
 
-	printf "%s \n"
+	awk '/^Name/ {printf "\n%-20s", $2} /^State/ {gsub("\(|\)"," ",$3); printf "%20s",  $3} /^Pid/ {printf "%20s \n", $2}' /proc/$proc/status
+
 done
 }
 
