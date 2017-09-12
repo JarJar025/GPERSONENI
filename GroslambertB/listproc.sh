@@ -9,7 +9,13 @@ function main()
 
 	
 	for lePid in $lesPid; do
-		/proc/lePid	
+		nameProc=$(grep -E  "Name" /proc/$lePid/status | awk -F":" '{print $2}' )
+		statusProc=$(grep -E  "State" /proc/$lePid/status | awk -F":" '{print $2}')  
+		
+		printf $lePid /r 
+		echo $nameProc
+		echo $statusProc		
+
 	done	
 
 
