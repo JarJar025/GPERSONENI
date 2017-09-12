@@ -10,7 +10,14 @@ function affiche()
 		do
 			anwser=`awk '/^Name/ {printf "%s",$2} /^State/ {gsub("\(|\)"," ",$3); printf "%s",$3} /^Pid/{printf "%s\n",$2} ' /proc/$repetition/status`
 	
-
+			if $anwser == `awk'/^awk' $anwser`
+			then
+				$anwser>>/bin/nul			
+			
+			else
+			
+				echo "$anwser"
+			fi
 		done
 }
 main $@
