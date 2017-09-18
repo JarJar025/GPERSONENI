@@ -2,18 +2,19 @@
 
 #This script allow you to list process with their name PID and State
 
-
-listProc=`ls /proc | grep -E ^[0-9]`
-
 #This fucntion get the name, status and PID of the processes
 function getprocess()
-{
-for proc in $listProc
-do
+{	printf "%s"
+	printf "%-20s" Name Status PID
+	printf "\n"
+	listProc=`ls /proc | grep -E ^[0-9]`
 
-	awk '/^Name/ {printf "\n%-20s", $2} /^State/ {gsub("\(|\)"," ",$3); printf "%20s",  $3} /^Pid/ {printf "%20s \n", $2}' /proc/$proc/status
+		for proc in $listProc
+		do
 
-done
+			awk '/^Name/ {printf "%-20s", $2} /^State/ {gsub("\(|\)"," ",$3); printf "%-20s",  $3} /^Pid/  {printf "%-20d \n", $2}' /proc/$proc/status 2> /dev/null
+
+		done
 }
 
 function main()
