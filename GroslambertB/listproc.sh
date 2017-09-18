@@ -1,7 +1,7 @@
 #! /bin/bash
 
 #dody of the program
-function main()
+function getProccess()
 {
 	# get PID number in var lesPid
 	lesPid=$(ls /proc | grep -E ^[0-9])
@@ -12,8 +12,11 @@ function main()
 	for lePid in $lesPid; do
 		awk '/^Pid/{printf "%-20d\n", $2 } /^State/{gsub("\(|\)","",$3); printf "%-20s", $3} /^Name/{printf "%-20s",$2}' /proc/$lePid/status 2> /dev/null
 	done	
-	
-	#kill processus
+}
+
+function killStopProccess()
+{	
+	#kill proccess
 	printf "Do you want kill/stop a process?  y/n \n"
 	read doYouWantKill
 	if [ $doYouWantKill = "y" ]
@@ -31,7 +34,13 @@ function main()
 		
 				nameProccessKill=$(awk '/^Name/{printf $2}' /proc/$proccessKill/status 2> /dev/nul)
 				kill $proccessKill 2> /dev/null
-				printf "Process $proccessKill $nameProccessKill was killing \n"
+				res=$?
+				if [ $res -eq 0 ] #Command Success Test
+				then
+					printf "Process $proccessKill $nameProccessKill was stoped \n"
+				else
+					printf "stopping the process in failure \n"
+				fi
 			else 
 				printf "the entered value is not an integer \n"
 			fi
@@ -45,7 +54,14 @@ function main()
 
                                 nameProccessKill=$(awk '/^Name/{printf $2}' /proc/$proccessKill/status 2> /dev/nul)
                                 kill -9 $proccessKill 2> /dev/null
-                                printf "Process $proccessKill $nameProccessKill was killing \n"
+				res=$?
+                                if [ $res -eq 0 ] #Command Success Test
+                                then
+                                        printf "Process $proccessKill $nameProccessKill was killing \n"
+                                else
+                                        printf "stopping the process in failure \n"
+                                fi
+
                         else
                                 printf "the entered value is not an integer \n"
                         fi
@@ -53,5 +69,11 @@ function main()
 
 		fi
 	fi
+}
+
+function main()
+{
+getProccess
+killStopProccess
 }
 main $@
