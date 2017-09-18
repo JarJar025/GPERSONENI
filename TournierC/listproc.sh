@@ -1,14 +1,11 @@
 #!/bin/bash
 
 #This script allow you to list every enabled process
-#listed by Name, Pid, and State
+#listed by Pid, Name, and State
 
 #ALPHA VERSION
 
-#TEMPORARY CODE
-#process=$(awk '/^Pid|State|Name/ {printf "%-25s%25s%25s "%s "$2 "$3}' /proc/$rep/status)
-
-printf "\n%-25s%25s%25s\n" **Name** **Pid** **State**
+printf "\n%-20s %-20s %-20s\n" **Name** **Pid** **State**
 
 function new_ps()
 {
@@ -19,14 +16,15 @@ function new_ps()
 		if [ -e /proc/$rep/status ] 
 		then
 			process=$(awk '/^Pid|^Name/ {printf "%s ",$2} /^State/ {gsub("\(sleeping\)","SLEEPING", $3); printf "%s ",$3}' /proc/$rep/status)
-#			process=$(awk '/^Pid|State|Name/ {print $2 $3}' /proc/$rep/status)
-			echo $process
+			echo $process | awk '{printf "%-20d %-20s %-20s\n",$3,$2,$1}' >> /tmp/test_listproc.txt 	
 #			name=`grep -s "Name" /proc/$rep/status | awk '{print $NF}'`
 #			pid=`grep -s "^Pid" /proc/$rep/status | awk '{print NF}'`
 #			state=`grep -s "State" /proc/$rep/status | awk '{print $2 $3}'`
 #			printf "%-25s%25s%25s\n "$name "$pid "$state
 		fi
 	done
+	cat /tmp/test_listproc.txt | sort -nk 1
+	rm /tmp/test_listproc.txt
 }
 
 function main()
