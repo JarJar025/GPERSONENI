@@ -4,7 +4,7 @@
 function getFolderProc(){
 
 	pathProc=`ls /proc | grep -s -E ^[0-9]`
-
+	
 }
 
 #Get processus name and status
@@ -13,45 +13,41 @@ function getNameStatusProc(){
 	#Call of the function that get the processus
 	getFolderProc
 
+	#Write in the console
+	printf "%-20s" PID	Name	Status
+	printf "\n\r"
+
 	#Action for each processus folder
 	for folder in $pathProc
 	do
-		#Check if the folder is not empty
-		if `grep -s -v -q 'Name' /proc/$folder/status`
+		
+		#Check if the folder exists
+		if [ -e /proc/$folder/status ]
 		then
-			nameProc=`grep -s 'Name' /proc/$folder/status | awk '{print $2}'`
-			pidProc=`grep -s '^Pid' /proc/$folder/status | awk '{print $2}'`
-			statProc=`grep -s 'State' /proc/$folder/status | awk '{print $2}'`		
-
-			#Call for the function that verbose the status
-			changeStatName
-
-			printf "The processus $nameProc, with the id $pidProc has the status $newStateProc.\n"
+			#Get Pid, status and name of status
+			propProc=$(awk '/^Pid/ {print $2} /^Name/ {print $2} /^State/ {gsub("\(|\)"," ",$3); print $3}' /proc/$folder/status)
+		
+			#Check if the proc is a zombie	
+			#if [ awk '{print $1 }'== "zombie" ]
+				
+			#	echo $propProc | awk '{printf "%-20d %-20s %-20s\n z ", $3,$2,$1}' | "sort -n -k 1"	
+	#		fi	
+			
+			#Show PID Name and State
+			echo $propProc | awk '{printf "%-20d %-20s %-20s\n ", $3,$1,$2}' 
+      
+	#sort -n -k 1	
 
 		else
-			#Error message if the folder is empty
-			printf "/proc/$folder is an empty, illisible or inexisting folder.\n"
+			#if the folder is empty redirect errors to /dev/null
+			2> /dev/null
+			
 		fi
 
 	done
 	
 }
 
-#Change the status name
-function changeStatName(){
-
-	#List of all possible status and change in a sentence easier to understand
-	case $statProc in
-		R) newStateProc="running";;
-		S) newStateProc="sleeping in an interruptible wait";;
-		D) newStateProc="waiting in uninterruptible disk sleep";;
-		Z) newStateProc="zombie";;
-		T) newStateProc="stopped on a signal";;
-		W) newStateProc="swapped";;
-		*) newStateProc="unknown status"
-	esac
-
-}
 
 #Main function
 function main(){
