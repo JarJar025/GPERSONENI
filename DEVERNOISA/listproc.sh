@@ -26,4 +26,8 @@ function list()
 		fi	
 	done
 }
-list | sort -k3n 
+function main()
+{
+	list | sort -k3n 
+}
+main
