@@ -5,7 +5,7 @@
 
 #ALPHA VERSION
 
-printf "\n%-20s %-20s %-20s\n" **PID** **NAME** **STATE**
+printf "\n%-20s %-20s %-20s %-20s\n" **PID** **NAME** **STATE** **KB_MEM**
 
 function new_ps()
 {
@@ -15,8 +15,9 @@ function new_ps()
 	do
 		if [ -e /proc/$rep/status ] 
 		then
-			process=$(awk '/^Pid|^Name/ {printf "%s ",$2} /^State/ {gsub("\(sleeping\)","SLEEPING", $3); printf "%s ",$3}' /proc/$rep/status)
-			echo $process | awk '{printf "%-20d %-20s %-20s\n",$3,$1,$2}' >> /tmp/test_listproc.txt 	
+			local process=$(awk '/^Pid|^Name|^VmRSS/ {printf "%s ",$2} /^State/ {gsub("\(sleeping\)","SLEEPING", $3); printf "%s ",$3}' /proc/$rep/status)
+			echo $process | awk '{printf "%-20d %-20s %-20s %-20d\n",$3,$1,$2,$4}' >> /tmp/test_listproc.txt 	
+
 #			name=`grep -s "Name" /proc/$rep/status | awk '{print $NF}'`
 #			pid=`grep -s "^Pid" /proc/$rep/status | awk '{print NF}'`
 #			state=`grep -s "State" /proc/$rep/status | awk '{print $2 $3}'`
@@ -24,8 +25,13 @@ function new_ps()
 		fi
 	done
 	cat /tmp/test_listproc.txt | sort -nk 1
-	rm -f /tmp/test_listproc.txt
+	rm /tmp/test_listproc.txt
 }
+
+#function kill_ps()
+#{
+	
+#}
 
 function main()
 {
