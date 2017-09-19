@@ -1,20 +1,22 @@
 #!/bin/bash
 
-#Ce script a pour but de récupérer le nom et le status des processus
+#The aim of this script is to retrieve the name, the pid and the status of various processes
 
+#This variable contains a list of pid for each process located in /proc
 repBoucle=`ls /proc | grep -E ^[0-9]`
 
 function folderBoucle (){
 for fold in $repBoucle
 do
-	awk '/^Name/{printf "\n%-20s",$2}/^State/{gsub("\(|\)"," ",$3);printf "%20s",$3}/^Pid/{printf "%20s\n",$2}' /proc/$fold/status
-#	printf " `grep Name /proc/$fold/status`\n" 
-#	printf " `grep ^Pid /proc/$fold/status` \n" 
-#	printf " `grep State /proc/$fold/status` \n"
-
+	#test if the status's file exists for each PID's folder 
+	if [ -e /proc/$fold/status ]
+		then
+			awk '/^Name/{printf "\n%-20s",$2}/^State/{gsub("\(|\)"," ",$3);printf "%20s",$3}/^Pid/{printf "%20s\n",$2}' /proc/$fold/status
+			 
+	fi
 done
 }
 
-#Appel de la fonction FolderBoucle
-folderBoucle
+#Call of the FolderBoucle 's function 
+folderBoucle | sort -k3n #sort the  third column
 
