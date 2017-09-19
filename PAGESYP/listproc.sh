@@ -16,7 +16,9 @@ do
 	fi
 done
 }
-
+function main ()
 #Call of the FolderBoucle 's function 
+{
 folderBoucle | sort -k3n #sort the  third column
-
+}
+main $@
