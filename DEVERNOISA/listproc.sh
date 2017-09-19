@@ -10,6 +10,7 @@ function list()
 
 	for valeur in $list 
 	do
+
 		#Recuperation of Name, Status and Pid 
 		awk '/^State:/ {gsub("\(|\)","",$3);printf "%-20s",$3}''/^Name:/ {printf "%-20s",$2}''/^Pid:/ {printf "%-20s\n",$2}' /proc/$valeur/status 2> /dev/null
 
@@ -26,6 +27,7 @@ function list()
 		fi	
 	done
 }
+
 function main()
 {
 	list | sort -k3n 
