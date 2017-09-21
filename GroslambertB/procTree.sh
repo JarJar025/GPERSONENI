@@ -38,8 +38,54 @@ function getProccess()
 }
 
 
+# Fetch all children of a given Parent
+function getChildPID() {
+cpids=`pgrep -P $1|xargs`
+# Displaying PIDs
+    for cpid in $cpids;
+    do
+        echo "    $cpid"
+        #getChildPID $cpid
+    done
+}
+
 function main()
 {
-getProccess
+function array_key_exists() {
+    local _array_name="$1"
+    local _key="$2"
+    local _cmd='echo ${!'$_array_name'[@]}'
+    local _array_keys=($(eval $_cmd))
+    local _key_exists=$(echo " ${_array_keys[@]} " | grep " $_key " &>/dev/null; echo $?)
+    [[ "$_key_exists" = "0" ]] && return 0 || return 1
+}
+
+processList=$(ls /proc | grep -e ^[0-9] | sort -n)
+for process in $processList;
+do
+	# Fetching the required elements
+	pidProc=$(awk '/^Pid/ {print $2;}' /proc/$process/status 2> /dev/null)
+	ppidProc=$(awk '/^PPid/ {print $2;}' /proc/$process/status 2> /dev/null)
+
+	# Creating new hash table
+	declare -A processArray
+	if [[ "$(array_key_exists 'processArray' $ppidProc; echo $?)" = "0" ]]; then
+		processArray[$ppidProc]+=",$pidProc" 
+	else
+		if [ ! -z "$ppidProc" ] 
+        	then
+			processArray[$ppidProc]="$pidProc"
+		fi
+	fi
+done
+
+
+# Formatting the display of our result
+for i in "${!processArray[@]}"
+do
+	echo "$i"
+	echo "    :${processArray[$i]}"
+done
+
 }
 main $@
