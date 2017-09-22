@@ -1,16 +1,24 @@
 #! /bin/bash
 
-#dody of the program
+#dody of the program listpproc
+
 function getProccess()
 {
 	# get PID number in var lesPid
-	lesPid=$(ls /proc | grep -E ^[0-9])
+	local lesPid=$(ls /proc | grep -E ^[0-9])
 	printf "%-20s" Name Statu PID
 	printf "\n\r"
 
 	#loop "for": displays on the standard input the name of the processes in operation, the PID and the statuses. Redirects errors to black hole
 	for lePid in $lesPid; do
 		awk '/^Pid/{printf "%-20d\n", $2 } /^State/{gsub("\(|\)","",$3); printf "%-20s", $3} /^Name/{printf "%-20s",$2}' /proc/$lePid/status 2> /dev/null
+	
+	#find zombie
+	#getZombiz=$(grep "zombie" $listProc 2> /dev/null)
+	#listZombie=$?
+	#if [ $listZombie -eq 0 ]
+	#then
+	#fi
 	done	
 }
 
@@ -32,9 +40,9 @@ function killStopProccess()
 			if let $proccessKill 2>/dev/nul 
 			then
 		
-				nameProccessKill=$(awk '/^Name/{printf $2}' /proc/$proccessKill/status 2> /dev/nul)
+				local nameProccessKill=$(awk '/^Name/{printf $2}' /proc/$proccessKill/status 2> /dev/nul)
 				kill $proccessKill 2> /dev/null
-				res=$?
+				local res=$?
 				if [ $res -eq 0 ] #Command Success Test
 				then
 					printf "Process $proccessKill $nameProccessKill was stoped \n"
@@ -52,9 +60,9 @@ function killStopProccess()
                         if let $proccessKill 2>/dev/nul
                         then
 
-                                nameProccessKill=$(awk '/^Name/{printf $2}' /proc/$proccessKill/status 2> /dev/nul)
+                                local nameProccessKill=$(awk '/^Name/{printf $2}' /proc/$proccessKill/status 2> /dev/nul)
                                 kill -9 $proccessKill 2> /dev/null
-				res=$?
+				local res=$?
                                 if [ $res -eq 0 ] #Command Success Test
                                 then
                                         printf "Process $proccessKill $nameProccessKill was killing \n"
