@@ -1,6 +1,7 @@
 #! /bin/bash
 
-#dody of the program
+#dody of the program listpproc
+
 function getProccess()
 {
 	# get PID number in var lesPid
