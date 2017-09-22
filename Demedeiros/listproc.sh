@@ -29,7 +29,7 @@ local listerep=`ls /proc | grep -E ^[0-9]`
 	done
 
 	#sort by the first column ( PID )
-	sort -n -k 1 $file_proc >> $file_proc_sort
+	sort -n -k 1 $file_proc >> $file_proc_sort 
 	
 }
 
@@ -69,7 +69,7 @@ function findzombie()
 
 		return ${return_code}
 	else
-		printf " $1 n'existe pas "
+		printf " $1 n'existe pas ou bien la simulation de processus n'est pas demarrer\n\n "
 		return 2
 	fi
 
@@ -79,17 +79,23 @@ function findzombie()
 
 function main()
 {
-	search
-	printf "%s\n-----------------------------------------------------------------------------------------------------"
-	printf "\n  Ceci est une simulation d'exemple de processus Zombie"
-	printf "\n   1 - Ouvrir deux terminaux "
-	printf "\n   1 - Exécuter le script simulation_zombie pour créer des processus zombies  (dans le terminal 1) )"
-	printf "\n       Ils seront automatiquement détruits par le père à la fin de l'exécution"
-	printf "\n   2 - Executer le script listproc.sh pour l'analyse des processus "
-	printf "\n  Conseil : Saisir le PID du processus père pour mettre fin au(x) fils\n"
-	printf "%s\n-----------------------------------------------------------------------------------------------------\n\n"
-	findzombie "$file_proc_sort"
-		
+	if [ -z $1 ]
+	then
+
+		printf " %-20s %-20s %-20s %-20s\n" "Pid" "PPid" "STATUT" "NOM" 
+		search
+		cat $file_proc_sort
+	else
+		printf "%s\n-----------------------------------------------------------------------------------------------------"
+		printf "\n  Ceci est une simulation d'exemple de processus Zombie"
+		printf "\n   1 - Ouvrir deux terminaux "
+		printf "\n   1 - Exécuter le script simulation_zombie pour créer des processus zombies  (dans le terminal 1) )"
+		printf "\n       Ils seront automatiquement détruits par le père à la fin de l'exécution"
+		printf "\n   2 - Executer le script listproc.sh pour l'analyse des processus "
+		printf "\n  Conseil : Saisir le PID du processus père pour mettre fin au(x) fils\n"
+		printf "%s\n-----------------------------------------------------------------------------------------------------\n\n"
+		findzombie "$file_proc_sort"
+	fi
 }
 
 
