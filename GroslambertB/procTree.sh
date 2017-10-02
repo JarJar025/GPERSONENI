@@ -1,28 +1,47 @@
 #! /bin/bash
 
-#dody of the program
-function getProccess()
+#hello function that returns a message on the standard output
+function getPid() 
 {
-	rm tempo 2> /dev/null
-	rm fileSortProc 2> /dev/null
-	
-	# get PID number in var lesPid
-	lesPid=$(ls /proc | grep -E ^[0-9])
-	printf "%-20s" PID PPID Name Statu >>tempo
-	printf "\n\r">>tempo
+	#this function allows to list the child processes of the process pere to pass in parameter of the script
+	process=$(awk '/^Pid/{printf "%-20d\n", $2 } /^PPid/{printf "%-20d\n",$2} /^State/{gsub("\(|\)","",$3); printf "%-20s", $3} /^Name/{printf "%-20s",$2}' /proc/$1/status 2> /dev/null)
+	echo $process	
+#	printf "$1 $2\n"$process
+	pid=$(awk '/^Pid/{printf $2}' /proc/$1/status 2> /dev/null)
 
-	#loop "for": displays on the standard input the name of the processes in operation, the PID and the statuses. Redirects errors to black hole
-	for lePid in $lesPid; do
-		ligneProc=$(awk '/^Pid/{printf "%-20d",$2 } /^PPid/{printf "%-20d\n",$2} /^State/{gsub("\(|\)","",$3); printf "%-20s",$3} /^Name/{printf "%-20s",$2}' /proc/$lePid/status 2> /dev/null)
-		echo $ligneProc | awk '{printf "%-20d %-20d %-20s %-20s\n", $3,$4,$1,$2}' >>tempo
+	pidsProces=$(ls /proc | grep -E ^[0-9])
+	
+	for pidProcess in $pidsProces; do
+
+		ppid=$(awk '/^PPid/{printf $2}' /proc/$pidProcess/status 2> /dev/null)
+		if [[ $ppid -eq $pid ]]
+		then
+			#childrenProc=$(awk '/^Pid/{printf "%-20d", $2 } /^PPid/{printf "%-20d\n",$2} /^State/{gsub("\(|\)","",$3); printf "%-20s", $3} /^Name/{printf "%-20s",$2}' /proc/$pidProcess/status 2> /dev/null)
+			childProc=$(awk '/^Pid/{printf $2}' /proc/$pidProcess/status 2> /dev/null)
+#			echo "+---$childProc"
+			listChildProc=$childProc,$listChildProc
+		fi
 	done
-	tmp=tempo
-	sort -n -k 1 $tmp >>fileSortProc		
+	echo $listChildProc
+
 }
 
+function getPid2()
+{
+	#this function allows to list the child processes of the process pere to pass in parameter of the script
+	process=$(awk '/^Pid/{printf "%-20d\n", $2 } /^PPid/{printf "%-20d\n",$2} /^State/{gsub("\(|\)","",$3); printf "%-20s", $3} /^Name/{printf "%-20s",$2}' /proc/$1/status 2> /dev/null)
+        echo $process
+        pid=$(awk '/^Pid/{printf $2}' /proc/$1/status 2> /dev/null)
+	child=$(grep "PPid:.*$pid" /proc/[0-9]*/status | awk -F '/' '{printf $3}')
+	echo $child
+}
 
+#dody of the program
 function main()
 {
-getProccess
+
+#	getPid $@
+	getPid2 $@
+
 }
 main $@

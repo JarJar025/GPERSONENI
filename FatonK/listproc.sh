@@ -11,13 +11,12 @@ function getprocess()
 
 		for proc in $listProc
 		do
-			awk '/^Name/ {printf "%-20s", $2} /^State/ {gsub("\(|\)"," ",$3); printf "%-20s",  $3} /^Pid/  {printf "%-20d \n", $2}' /proc/$proc/status 2> /dev/null
+			awk '/^Name/ {printf "%-20s", $2} /^State/ {gsub("\(|\)","",$3); printf "%-20s",  $3} /^Pid/  {printf "%-20d \n", $2}' /proc/$proc/status 2> /dev/null
 		done
 }
 
 function main()
 {
-getprocess | sort -k3n
+	getprocess | sort -k3n
 }
-
 main $@

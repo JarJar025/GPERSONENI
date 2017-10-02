@@ -1,31 +1,47 @@
 #!/bin/bash
 
-function vulgarisationStatus ()
+# Analysing the fetched state of a given process
+function compareState()
 {
     if [ $1 == "S" ]
     then
         statusProcV="WAITING"
     else
-        statusProcV="AUTRE"    
+        if [[ $1 == *"Z"* ]]
+        then
+            statusProcV="ZOMBIE"
+        else
+            statusProcV="OTHER"    
+        fi
     fi
 }
 
-listeProc=$(ls /proc | grep -e ^[0-9])
-
-echo -n "Liste des processus (PID): "
-echo $listeProc
-
-for unProc in $listeProc
+# Main function
+function main()
 {
-    if [ -e /proc/$unProc/status ] 
-    then
-        nomProc=$(grep Name /proc/$unProc/status | awk '{ print $2 }')
-        statusProc=$(grep State /proc/$unProc/status | awk '{ print $2 }')
+    listeProc=$(ls /proc | grep -e ^[0-9])
 
-        #statusProcV=""
-        vulgarisationStatus $statusProc
+# Columns headers
+    printf "%-5s | %-15s | %-5s\n" "PID" "NAME" "STATE"
 
-        chaine="Status du processus $nomProc --> $statusProcV"
-        echo $chaine
-    fi 
+# Processing every processes found
+    for proc in $listeProc
+    {
+        if [ -e /proc/$proc/status ] 
+        then
+
+# Fetching the required elements
+            nomProc=$(awk '/^Name/ {print $2;}' /proc/$proc/status)
+            statusProc=$(awk '/^State/ {print $2;}' /proc/$proc/status)
+            pidProc=$(awk '/^Pid/ {print $2;}' /proc/$proc/status)
+
+# Calling our function
+            compareState $statusProc
+
+# Displaying results with columns
+            printf "%-5s | %-15s | %-5s\n" "$pidProc" "$nomProc" "$statusProcV"
+        fi 
+    }
 }
+
+main $@
