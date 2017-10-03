@@ -1,40 +1,26 @@
 #!/bin/bash
 
-#Sort the PID by PPID like a tree with the whole class we think about do that
-
-#For each PID
-#Do
-	#Get PPID and PID
-		#If PPID exists in tab[]
-			#create tab[PPID]
-		#Else
-			#Add PID in tab[PPID]
-		#FI
-#Done
-
-#And we loop on the table tab[] to print the results
-
-
 function list()
 {
-	#List all process with regular expression
-	list=`ls /proc | grep -E ^[0-9]`
-
-	#Formats column header
-	printf "Pid\n"
-
-	for valeur in $list 
-	do
-
-		#Recuperation of Pid 
-		pid=$(awk '/^Pid/ {print $2}' /proc/$valeur/status 2> /dev/null)
-		echo $pid
-	done
+	#Verification for the presence of a parameter after the script execution
+	if [ $# -eq 0 ]
+	then
+		echo "Please enter a valid parameter after the script starts"
+	else
+		#Recuperation of Name, Status, Pid and PPid
+		awk '/^State:/ {printf "%-20s",$3}''/^Name:/ {printf "%-20s",$2}''/^Pid:/ {printf "%-20s",$2}''/^PPid:/ {printf "%-20s\n",$2}' /proc/$1/status 2> /dev/null
+		#Recuperation of PPid
+		child=$(grep "PPid:.*$1" /proc/[0-9]*/status | awk -F '/' '{print $3}')
+		[[  -z $2 ]] && printf "Name%15s State%14s Pid%10s PPid%s\n" 
+		for value in $child
+		do
+			list $value 1
+		done
+	fi
 }
 
 function main()
 {
-	list | sort -n
+	list $1
 }
-main
-
+main $@ | sort -k4n

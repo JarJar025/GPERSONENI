@@ -1,0 +1,5 @@
+clement:users:azerty:rwx
+arthur:users:azerty:rwx
+pierre:users:azerty:rwx
+capucine:users:azerty:rwx
+bertrand:users:azerty:rwx
