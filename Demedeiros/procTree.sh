@@ -70,15 +70,15 @@ echo
 function showchildren()
 {
 
-		#This variable contains  the list of all ppid process
-		ppid_process=$(grep "PPid:.*" /proc/[0-9]*/status | awk  ' { print $2}' | sort -n | uniq)
-		array_ppid_process=($ppid_process)
+	#This variable contains  the list of all ppid process
+	ppid_process=$(grep "PPid:.*" /proc/[0-9]*/status | awk  ' { print $2}' | sort -n | uniq)
+	array_ppid_process=($ppid_process)
 
-		#echo ${pid_dir[@]}
-		for i in ${array_ppid_process[@]}
-		do
-		  getchildren "$i"
-		done
+	#echo ${pid_dir[@]}
+	for i in ${array_ppid_process[@]}
+	do
+	  getchildren "$i"
+	done
 
 }
 
@@ -97,41 +97,36 @@ function title()
 function main()
 {
 
-title
-echo " Pour afficher la liste de tous les processus pères et de leurs enfants : choisir 1"
-echo " Pour afficher la liste de tous les enfants d'un processus père : choisir 2"
-echo -e "\n Quel est votre choix  = \c ";read reponse
+    title
+    echo " Pour afficher la liste de tous les processus pères et de leurs enfants : choisir 1"
+    echo " Pour afficher la liste de tous les enfants d'un processus père : choisir 2"
+    echo -e "\n Quel est votre choix  = \c ";read reponse
 
-case $reponse in
- 1)
-	 
-		showchildren
-;;
-2)
-
-
-
-   z   printf "\n%s Quel est le pid du processus dont on veut les fils ?"
-        echo -e "\n Saisir le PID du processus  = \c ";read pid_answer
-		 #test if $pid_answer is empty
-        [ -z $pid_answer ] && printf " Abandon du script, paramètre absent\n " && exit 1
-        #test if $pid_answer is an integer
-        if ((pid_answer)) 2> /dev/null
-        then
-                [ -e /proc/$pid_answer/status ]&& getchildren $pid_answer || echo -e"\n Le PID $pid_answer n'existe pas " && exit 2
-
-        else
-                printf " Saisir une valeur entière pour le PID "
-                exit 1
-        fi
-;;
-*)
+    case $reponse in
+                1)
+		   showchildren
+                   ;;
+                2)
+                  printf "\n%s Quel est le pid du processus dont on veut les fils ?"
+                  echo -e "\n Saisir le PID du processus  = \c ";read pid_answer
+		  #test if $pid_answer is empty
+                  [ -z $pid_answer ] && printf " Abandon du script, paramètre absent\n " && exit 1
+                  #test if $pid_answer is an integer
+                  if ((pid_answer)) 2> /dev/null
+                  then
+                     [ -e /proc/$pid_answer/status ]&& getchildren $pid_answer || echo -e"\n Le PID $pid_answer n'existe pas " && exit 2
+                 else
+                     printf " Saisir une valeur entière pour le PID "
+                     exit 1
+                 fi
+                 ;;
+              *)
 		echo " Choix incorrect  "
 		echo
 		exit 2
 
-;;
-esac
+                ;;
+     esac
 
 }
 
