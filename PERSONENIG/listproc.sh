@@ -1,5 +1,20 @@
 #!/bin/bash
 
+#Sort the PID by PPID like a tree, with the whole class we think about do that
+
+#For each PID
+	#Get PPID and PID
+		#If PPID exists in tab[]
+			#Create tab[PPID]
+		#Else
+			#Add PID in tab[PPID]
+		#Fi
+#done
+
+#And we loop on the table tab[] to print the results
+
+
+
 #Get folder in /proc for all processus
 function getFolderProc(){
 
@@ -52,10 +67,12 @@ function getNameStatusProc(){
 #Main function
 function main(){
 	
-	getNameStatusProc
+	getNameStatusProc | sort -n -k 1
 	
 }
 
 #Call of the main function
 main $@
+
+
 
