@@ -1,0 +1,3 @@
+/home/toto:titi:r-x
+/home/tata:toto:rw-
+/home/alpha:tata:rwx
